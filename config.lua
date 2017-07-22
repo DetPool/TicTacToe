@@ -91,8 +91,10 @@ end
 function Config:Exit()
 	SendChatMessage("exited the game.", "EMOTE");
 	myTurn = true;
+	playerTwo = "";
 	playerX = true;
 	--multiplayer = false;
+	blackList = "";
 	counter = 0;
 	win = false;
 	MainFrame:Hide();
@@ -344,8 +346,9 @@ local function ReceiveInput(event, _, message, sender, language, channelString, 
 
 		if (argsMsg[#argsMsg] == "at-x0g") then
 			EnableFields();
-			for c in blackList do
-				MainFrame.field[c]:Disable();
+			for i = 1, #blackList do
+				local c = blackList:sub(i,i)
+				MainFrame.field[tonumber(c)]:Disable();
 			end
 		end
 
@@ -357,8 +360,10 @@ local function ReceiveInput(event, _, message, sender, language, channelString, 
 			end
 
 			EnableFields();
-			for c in blackList do
-				MainFrame.field[c]:Disable();
+
+			for i = 1, #blackList do
+				local c = blackList:sub(i,i)
+				MainFrame.field[tonumber(c)]:Disable();
 			end
 
 			myTurn = true;
