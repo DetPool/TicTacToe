@@ -181,7 +181,7 @@ end
 function SelectField(key)
 	if (string.find(blackList, tostring(key))) then
 	else
-		MainFrame.field[key]:Disable();
+		MainFrame.field[tonumber(key)]:Disable();
 		count = count + 1;
 		if (playerX == true) then
 			MainFrame.field[key]:SetText("X");
