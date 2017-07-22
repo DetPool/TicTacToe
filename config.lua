@@ -19,8 +19,10 @@ local defaults = {
 	}
 }
 
+local playerOne = UnitName("player")
+local playerTwo = ""
 local myTurn = true
-local playerOne = true;
+local playerX = true;
 local multiplayer = true;
 local count = 0;
 local win = false;
@@ -89,7 +91,7 @@ end
 function Config:Exit()
 	SendChatMessage("exited the game.", "EMOTE");
 	myTurn = true;
-	playerOne = true;
+	playerX = true;
 	--multiplayer = false;
 	counter = 0;
 	win = false;
@@ -115,16 +117,16 @@ function Config:Toggle()
 	menu:SetShown(not menu:IsShown());
 end
 
-local function Field_Onclick(self)
-	if (playerOne and multiplayer == false) then
-		SendChatMessage("has put an X on the field : " .. self:GetID(), "EMOTE");
-	else
-		SendChatMessage("has put an O on the field : " .. self:GetID(), "EMOTE");
+local function DisableFields()
+	for i = 1, #MainFrame.field do
+		MainFrame.field[i]:Disable();
 	end
+end
 
-	SelectField(self:GetID());
-	myTurn = false;
-	DisableFields();
+local function EnableFields()
+	for i = 1, #MainFrame.field do
+		MainFrame.field[i]:Enable();
+	end
 end
 
 function Config:CreateButton(id, point, relativeFrame, relativePoint, xOffset, yOffset, text)
@@ -142,131 +144,132 @@ function Config:CreateButton(id, point, relativeFrame, relativePoint, xOffset, y
 	return btn;
 end
 
---------------------------------------
--- Functions
---------------------------------------
-local function DisableFields()
-	for i = 1, #MainFrame.field do
-		MainFrame.field[i]:Disable();
-	end
-end
-
-local function EnableFields()
-	for i = 1, #MainFrame.field do
-		MainFrame.field[i]:Enable();
-	end
-end
-
-function SelectField(key)
-	MainFrame.field[key]:Disable();
-	count = count + 1;
-	if (playerOne == true) then
-		MainFrame.field[key]:SetText("X");
-		playerOne = false;
+local function Field_Onclick(self)
+	if (playerX and multiplayer == false) then
+		SendChatMessage("has put an X on the field : " .. self:GetID(), "EMOTE");
 	else
-		MainFrame.field[key]:SetText("O");
-		playerOne = true;
+		SendChatMessage("has put an O on the field : " .. self:GetID(), "EMOTE");
 	end
 
+	SelectField(self:GetID());
+	myTurn = false;
+	
 	if (multiplayer) then
 		DisableFields();
 	end
+end
 
-	if (count >= 5) then
-		--[[
-		local btnOne = MainFrame.field[1];
-		local btnTwo = MainFrame.field[2];
-		local btnThree = MainFrame.field[3]:LockHighlight();
-		local btnFour = MainFrame.field[4]:LockHighlight();
-		local btnFive = MainFrame.field[5]:LockHighlight();
-		local btnSix = MainFrame.field[6]:LockHighlight();
-		local btnSeven = MainFrame.field[7]:LockHighlight();
-		local btnEight = MainFrame.field[8]:LockHighlight();
-		local btnNine = MainFrame.field[9]:LockHighlight();
-		]]
-
-		if ((MainFrame.field[1]:GetText() == MainFrame.field[2]:GetText()) and (MainFrame.field[1]:GetText() == MainFrame.field[3]:GetText()) and (MainFrame.field[1]:GetText() ~= nil)) then
-			MainFrame.field[1]:LockHighlight();
-			MainFrame.field[2]:LockHighlight();
-			MainFrame.field[3]:LockHighlight();
-			SendChatMessage("won the game!", "EMOTE");
-			DoEmote("dance");
-			DisableFields();
-			win = true;
+--------------------------------------
+-- Functions
+--------------------------------------
+function SelectField(key)
+	if (MainFrame.field[key].IsDisabled == false) then
+		MainFrame.field[key]:Disable();
+		count = count + 1;
+		if (playerX == true) then
+			MainFrame.field[key]:SetText("X");
+			playerX = false;
+		else
+			MainFrame.field[key]:SetText("O");
+			playerX = true;
 		end
 
-		if ((MainFrame.field[4]:GetText() == MainFrame.field[5]:GetText()) and (MainFrame.field[4]:GetText() == MainFrame.field[6]:GetText()) and (MainFrame.field[4]:GetText() ~= nil)) then
-			MainFrame.field[4]:LockHighlight();
-			MainFrame.field[5]:LockHighlight();
-			MainFrame.field[6]:LockHighlight();
-			SendChatMessage("won the game!", "EMOTE");
-			DoEmote("dance");
-			DisableFields();
-			win = true;
-		end
+		if (count >= 5) then
+			--[[
+			local btnOne = MainFrame.field[1];
+			local btnTwo = MainFrame.field[2];
+			local btnThree = MainFrame.field[3]:LockHighlight();
+			local btnFour = MainFrame.field[4]:LockHighlight();
+			local btnFive = MainFrame.field[5]:LockHighlight();
+			local btnSix = MainFrame.field[6]:LockHighlight();
+			local btnSeven = MainFrame.field[7]:LockHighlight();
+			local btnEight = MainFrame.field[8]:LockHighlight();
+			local btnNine = MainFrame.field[9]:LockHighlight();
+			]]
 
-		if ((MainFrame.field[7]:GetText() == MainFrame.field[8]:GetText()) and (MainFrame.field[7]:GetText() == MainFrame.field[9]:GetText()) and (MainFrame.field[7]:GetText() ~= nil)) then
-			MainFrame.field[7]:LockHighlight();
-			MainFrame.field[8]:LockHighlight();
-			MainFrame.field[9]:LockHighlight();
-			SendChatMessage("won the game!", "EMOTE");
-			DoEmote("dance");
-			DisableFields();
-			win = true;
-		end
+			if ((MainFrame.field[1]:GetText() == MainFrame.field[2]:GetText()) and (MainFrame.field[1]:GetText() == MainFrame.field[3]:GetText()) and (MainFrame.field[1]:GetText() ~= nil)) then
+				MainFrame.field[1]:LockHighlight();
+				MainFrame.field[2]:LockHighlight();
+				MainFrame.field[3]:LockHighlight();
+				SendChatMessage("won the game!", "EMOTE");
+				DoEmote("dance");
+				DisableFields();
+				win = true;
+			end
 
-		if ((MainFrame.field[1]:GetText() == MainFrame.field[4]:GetText()) and (MainFrame.field[1]:GetText() == MainFrame.field[7]:GetText()) and (MainFrame.field[1]:GetText() ~= nil)) then
-			MainFrame.field[1]:LockHighlight();
-			MainFrame.field[4]:LockHighlight();
-			MainFrame.field[7]:LockHighlight();
-			SendChatMessage("won the game!", "EMOTE");
-			DoEmote("dance");
-			DisableFields();
-			win = true;
-		end
+			if ((MainFrame.field[4]:GetText() == MainFrame.field[5]:GetText()) and (MainFrame.field[4]:GetText() == MainFrame.field[6]:GetText()) and (MainFrame.field[4]:GetText() ~= nil)) then
+				MainFrame.field[4]:LockHighlight();
+				MainFrame.field[5]:LockHighlight();
+				MainFrame.field[6]:LockHighlight();
+				SendChatMessage("won the game!", "EMOTE");
+				DoEmote("dance");
+				DisableFields();
+				win = true;
+			end
 
-		if ((MainFrame.field[2]:GetText() == MainFrame.field[5]:GetText()) and (MainFrame.field[2]:GetText() == MainFrame.field[8]:GetText()) and (MainFrame.field[2]:GetText() ~= nil)) then
-			MainFrame.field[2]:LockHighlight();
-			MainFrame.field[5]:LockHighlight();
-			MainFrame.field[8]:LockHighlight();
-			SendChatMessage("won the game!", "EMOTE");
-			DoEmote("dance");
-			DisableFields();
-			win = true;
-		end
+			if ((MainFrame.field[7]:GetText() == MainFrame.field[8]:GetText()) and (MainFrame.field[7]:GetText() == MainFrame.field[9]:GetText()) and (MainFrame.field[7]:GetText() ~= nil)) then
+				MainFrame.field[7]:LockHighlight();
+				MainFrame.field[8]:LockHighlight();
+				MainFrame.field[9]:LockHighlight();
+				SendChatMessage("won the game!", "EMOTE");
+				DoEmote("dance");
+				DisableFields();
+				win = true;
+			end
 
-		if ((MainFrame.field[3]:GetText() == MainFrame.field[6]:GetText()) and (MainFrame.field[3]:GetText() == MainFrame.field[9]:GetText()) and (MainFrame.field[3]:GetText() ~= nil)) then
-			MainFrame.field[3]:LockHighlight();
-			MainFrame.field[6]:LockHighlight();
-			MainFrame.field[9]:LockHighlight();
-			SendChatMessage("won the game!", "EMOTE");
-			DoEmote("dance");
-			DisableFields();
-			win = true;
-		end
+			if ((MainFrame.field[1]:GetText() == MainFrame.field[4]:GetText()) and (MainFrame.field[1]:GetText() == MainFrame.field[7]:GetText()) and (MainFrame.field[1]:GetText() ~= nil)) then
+				MainFrame.field[1]:LockHighlight();
+				MainFrame.field[4]:LockHighlight();
+				MainFrame.field[7]:LockHighlight();
+				SendChatMessage("won the game!", "EMOTE");
+				DoEmote("dance");
+				DisableFields();
+				win = true;
+			end
 
-		if ((MainFrame.field[1]:GetText() == MainFrame.field[5]:GetText()) and (MainFrame.field[1]:GetText() == MainFrame.field[9]:GetText()) and (MainFrame.field[1]:GetText() ~= nil)) then
-			MainFrame.field[1]:LockHighlight();
-			MainFrame.field[5]:LockHighlight();
-			MainFrame.field[9]:LockHighlight();
-			SendChatMessage("won the game!", "EMOTE");
-			DoEmote("dance");
-			DisableFields();
-			win = true;
-		end
+			if ((MainFrame.field[2]:GetText() == MainFrame.field[5]:GetText()) and (MainFrame.field[2]:GetText() == MainFrame.field[8]:GetText()) and (MainFrame.field[2]:GetText() ~= nil)) then
+				MainFrame.field[2]:LockHighlight();
+				MainFrame.field[5]:LockHighlight();
+				MainFrame.field[8]:LockHighlight();
+				SendChatMessage("won the game!", "EMOTE");
+				DoEmote("dance");
+				DisableFields();
+				win = true;
+			end
 
-		if ((MainFrame.field[3]:GetText() == MainFrame.field[5]:GetText()) and (MainFrame.field[3]:GetText() == MainFrame.field[7]:GetText()) and (MainFrame.field[3]:GetText() ~= nil)) then
-			MainFrame.field[3]:LockHighlight();
-			MainFrame.field[5]:LockHighlight();
-			MainFrame.field[7]:LockHighlight();
-			SendChatMessage("won the game!", "EMOTE");
-			DoEmote("dance");
-			DisableFields();
-			win = true;
+			if ((MainFrame.field[3]:GetText() == MainFrame.field[6]:GetText()) and (MainFrame.field[3]:GetText() == MainFrame.field[9]:GetText()) and (MainFrame.field[3]:GetText() ~= nil)) then
+				MainFrame.field[3]:LockHighlight();
+				MainFrame.field[6]:LockHighlight();
+				MainFrame.field[9]:LockHighlight();
+				SendChatMessage("won the game!", "EMOTE");
+				DoEmote("dance");
+				DisableFields();
+				win = true;
+			end
+
+			if ((MainFrame.field[1]:GetText() == MainFrame.field[5]:GetText()) and (MainFrame.field[1]:GetText() == MainFrame.field[9]:GetText()) and (MainFrame.field[1]:GetText() ~= nil)) then
+				MainFrame.field[1]:LockHighlight();
+				MainFrame.field[5]:LockHighlight();
+				MainFrame.field[9]:LockHighlight();
+				SendChatMessage("won the game!", "EMOTE");
+				DoEmote("dance");
+				DisableFields();
+				win = true;
+			end
+
+			if ((MainFrame.field[3]:GetText() == MainFrame.field[5]:GetText()) and (MainFrame.field[3]:GetText() == MainFrame.field[7]:GetText()) and (MainFrame.field[3]:GetText() ~= nil)) then
+				MainFrame.field[3]:LockHighlight();
+				MainFrame.field[5]:LockHighlight();
+				MainFrame.field[7]:LockHighlight();
+				SendChatMessage("won the game!", "EMOTE");
+				DoEmote("dance");
+				DisableFields();
+				win = true;
+			end
 		end
 	end
 
-	if (count >= 9) then
+	if (count >= 9) and (win == false) then
 		Config.Reset();
 	end
 end
@@ -340,6 +343,10 @@ local function ReceiveInput(event, _, message, sender, language, channelString, 
 
 
 		if (argsSnd[1] ~= UnitName("player")) then
+			if (#playerTwo > 0) then
+			else
+				playerTwo = argsSnd[1];
+			end
 			EnableFields();
 			SelectField(tonumber(argsMsg[#argsMsg]));
 		end
