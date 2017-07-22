@@ -6,6 +6,8 @@ core.Config = {}; -- adds Config table to addon namespace
 
 local Config = core.Config;
 local MainFrame;
+local ConfigFrame;
+local Title = "Tic Tac Toe"
 
 --------------------------------------
 -- Defaults (usually a database!)
@@ -24,7 +26,7 @@ local playerTwo = ""
 local myTurn = true
 local playerX = true;
 local multiplayer = true;
-local count = 0;
+local counter = 0;
 local win = false;
 local blackList = "";
 
@@ -38,7 +40,7 @@ function Config:CreateMenu()
 	MainFrame:SetPoint("CENTER", UIParent, "CENTER"); -- point, relativeFrame, relativePoint, xOffset, yOffset
 	MainFrame.title = MainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
 	MainFrame.title:SetPoint("LEFT", MainFrame.TitleBg, "LEFT", 5, 0);
-	MainFrame.title:SetText("Tic Tac Toe");
+	MainFrame.title:SetText(Title);
 	MainFrame:SetMovable(true)
 	MainFrame:EnableMouse(true)
 	MainFrame:SetScript("OnMouseDown", function(self, button)
@@ -60,9 +62,28 @@ function Config:CreateMenu()
 	  end
 	end)
 
+	MainFrame.configBtn = CreateFrame("Button", nil, MainFrame, "GameMenuButtonTemplate");
+	MainFrame.configBtn:ClearAllPoints();
+	MainFrame.configBtn:SetWidth(50); -- width, height
+	MainFrame.configBtn:SetPoint("TOPRIGHT", MainFrame, "TOPRIGHT", -24, 0);
+	MainFrame.configBtn:SetScript("OnClick", function(self) if (ConfigFrame:IsShown()) then ConfigFrame:Hide(); else ConfigFrame:Show(); end end);
+	MainFrame.configBtn.title = MainFrame.configBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
+	MainFrame.configBtn.title:SetPoint("LEFT", MainFrame.configBtn, "LEFT", 5, 0);
+	MainFrame.configBtn.title:SetText("Config");
+
+	MainFrame.resetBtn = CreateFrame("Button", nil, MainFrame, "GameMenuButtonTemplate");
+	MainFrame.resetBtn:ClearAllPoints();
+	MainFrame.resetBtn:SetWidth(50); -- width, height
+	MainFrame.resetBtn:SetPoint("RIGHT", MainFrame.configBtn, "LEFT", 0, 0);
+	MainFrame.resetBtn:SetScript("OnClick", Config.Reset);
+	MainFrame.resetBtn.title = MainFrame.resetBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
+	MainFrame.resetBtn.title:SetPoint("LEFT", MainFrame.resetBtn, "LEFT", 5, 0);
+	MainFrame.resetBtn.title:SetText("Reset");
+
 	MainFrame.soloCheckBox = CreateFrame("CheckButton", nil, MainFrame, "UICheckButtonTemplate");
 	MainFrame.soloCheckBox:ClearAllPoints();
-	MainFrame.soloCheckBox:SetPoint("TOPRIGHT", MainFrame, "TOPRIGHT", -18, 4);
+	MainFrame.soloCheckBox:SetSize(30, 30); -- width, height
+	MainFrame.soloCheckBox:SetPoint("RIGHT", MainFrame.resetBtn, "LEFT", 0, -1);
 	MainFrame.soloCheckBox:SetScript("OnClick", function(self)
 			if (self:GetChecked()) then
 				multiplayer = false;
@@ -70,7 +91,13 @@ function Config:CreateMenu()
 				multiplayer = true;
 			end
 		end);
-	MainFrame.soloCheckBox:SetChecked(false);
+	if (multiplayer) then
+		MainFrame.soloCheckBox:SetChecked(false);
+	else
+		MainFrame.soloCheckBox:SetChecked(true);
+	end
+
+
 
 	MainFrame.field = {
 		self:CreateButton(1, "TOPLEFT",		MainFrame,	"TOPLEFT",		12,		-24, "");
@@ -83,6 +110,15 @@ function Config:CreateMenu()
 		self:CreateButton(8, "BOTTOM", 		MainFrame,	"BOTTOM",		0,		12, "");
 		self:CreateButton(9, "BOTTOMRIGHT", MainFrame,	"BOTTOMRIGHT",	-12,	12, "");
 	}  
+
+
+	ConfigFrame = CreateFrame("Frame", "TicTacToe_ConfigFrame", MainFrame, "BasicFrameTemplateWithInset");
+	ConfigFrame:SetSize(MainFrame:GetWidth(), 80); -- width, height
+	ConfigFrame:SetPoint("TOP", MainFrame, "BOTTOM"); -- point, relativeFrame, relativePoint, xOffset, yOffset
+	ConfigFrame.title = ConfigFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
+	ConfigFrame.title:SetPoint("LEFT", ConfigFrame.TitleBg, "LEFT", 5, 0);
+	ConfigFrame.title:SetText("Configuration");
+	ConfigFrame:Hide();
 
 	--[[
 	MainFrame.field = self:CreateButton("TOPLEFT",		MainFrame,	"TOPLEFT",		12,		-24, "");
@@ -101,7 +137,7 @@ function Config:CreateMenu()
 end
 
 function Config:Exit()
-	SendChatMessage("exited the game.", "EMOTE");
+	SendChatMessage("has quit the game.", "EMOTE");
 	myTurn = true;
 	playerTwo = "";
 	playerX = true;
@@ -110,6 +146,9 @@ function Config:Exit()
 	counter = 0;
 	win = false;
 	MainFrame:Hide();
+	ConfigFrame:Hide();
+	ConfigFrame = nil;
+	MainFrame.title:SetText(Title);
 	MainFrame = nil;
 end
 
@@ -144,15 +183,19 @@ local function EnableFields()
 end
 
 local function Field_Onclick(self)
-	if (playerX) then
-		SendChatMessage("has put an X on the field : " .. self:GetID(), "EMOTE");
-	else
-		SendChatMessage("has put an O on the field : " .. self:GetID(), "EMOTE");
+	if (multiplayer) then
+		if (playerX) then
+			SendChatMessage("has put an X on the field : " .. self:GetID(), "EMOTE");
+		else
+			SendChatMessage("has put an O on the field : " .. self:GetID(), "EMOTE");
+		end
 	end
 
 	SelectField(self:GetID());
-	myTurn = false;
-	
+	if (multiplayer) then
+		myTurn = false;
+	end
+
 	if (multiplayer) then
 		DisableFields();
 	end
@@ -182,7 +225,7 @@ function SelectField(key)
 	if (string.find(blackList, tostring(key))) then
 	else
 		MainFrame.field[tonumber(key)]:Disable();
-		count = count + 1;
+		counter = counter + 1;
 		if (playerX == true) then
 			MainFrame.field[key]:SetText("X");
 			playerX = false;
@@ -193,7 +236,7 @@ function SelectField(key)
 
 		blackList = blackList .. key;
 
-		if (count >= 5) then
+		if (counter >= 5) then
 			--[[
 			local btnOne = MainFrame.field[1];
 			local btnTwo = MainFrame.field[2];
@@ -210,9 +253,11 @@ function SelectField(key)
 				MainFrame.field[1]:LockHighlight();
 				MainFrame.field[2]:LockHighlight();
 				MainFrame.field[3]:LockHighlight();
-				if (myTurn == true) then
+				if (myTurn == true) and (multiplayer) then
 					SendChatMessage("won the game!", "EMOTE");
-					DoEmote("dance");
+					DoEmote("DANCE", none);
+				elseif (myTurn == false) and (multiplayer) then
+					DoEmote("CRY", playerTwo);
 				end
 				DisableFields();
 				win = true;
@@ -222,9 +267,11 @@ function SelectField(key)
 				MainFrame.field[4]:LockHighlight();
 				MainFrame.field[5]:LockHighlight();
 				MainFrame.field[6]:LockHighlight();
-				if (myTurn == true) then
+				if (myTurn == true) and (multiplayer) then
 					SendChatMessage("won the game!", "EMOTE");
-					DoEmote("dance");
+					DoEmote("DANCE", none);
+				elseif (myTurn == false) and (multiplayer) then
+					DoEmote("CRY", playerTwo);
 				end
 				DisableFields();
 				win = true;
@@ -234,9 +281,11 @@ function SelectField(key)
 				MainFrame.field[7]:LockHighlight();
 				MainFrame.field[8]:LockHighlight();
 				MainFrame.field[9]:LockHighlight();
-				if (myTurn == true) then
+				if (myTurn == true) and (multiplayer) then
 					SendChatMessage("won the game!", "EMOTE");
-					DoEmote("dance");
+					DoEmote("DANCE", none);
+				elseif (myTurn == false) and (multiplayer) then
+					DoEmote("CRY", playerTwo);
 				end
 				DisableFields();
 				win = true;
@@ -246,9 +295,11 @@ function SelectField(key)
 				MainFrame.field[1]:LockHighlight();
 				MainFrame.field[4]:LockHighlight();
 				MainFrame.field[7]:LockHighlight();
-				if (myTurn == true) then
+				if (myTurn == true) and (multiplayer) then
 					SendChatMessage("won the game!", "EMOTE");
-					DoEmote("dance");
+					DoEmote("DANCE", none);
+				elseif (myTurn == false) and (multiplayer) then
+					DoEmote("CRY", playerTwo);
 				end
 				DisableFields();
 				win = true;
@@ -258,9 +309,11 @@ function SelectField(key)
 				MainFrame.field[2]:LockHighlight();
 				MainFrame.field[5]:LockHighlight();
 				MainFrame.field[8]:LockHighlight();
-				if (myTurn == true) then
+				if (myTurn == true) and (multiplayer) then
 					SendChatMessage("won the game!", "EMOTE");
-					DoEmote("dance");
+					DoEmote("DANCE", none);
+				elseif (myTurn == false) and (multiplayer) then
+					DoEmote("CRY", playerTwo);
 				end
 				DisableFields();
 				win = true;
@@ -270,9 +323,11 @@ function SelectField(key)
 				MainFrame.field[3]:LockHighlight();
 				MainFrame.field[6]:LockHighlight();
 				MainFrame.field[9]:LockHighlight();
-				if (myTurn == true) then
+				if (myTurn == true) and (multiplayer) then
 					SendChatMessage("won the game!", "EMOTE");
-					DoEmote("dance");
+					DoEmote("DANCE", none);
+				elseif (myTurn == false) and (multiplayer) then
+					DoEmote("CRY", playerTwo);
 				end
 				DisableFields();
 				win = true;
@@ -282,9 +337,11 @@ function SelectField(key)
 				MainFrame.field[1]:LockHighlight();
 				MainFrame.field[5]:LockHighlight();
 				MainFrame.field[9]:LockHighlight();
-				if (myTurn == true) then
+				if (myTurn == true) and (multiplayer) then
 					SendChatMessage("won the game!", "EMOTE");
-					DoEmote("dance");
+					DoEmote("DANCE", none);
+				elseif (myTurn == false) and (multiplayer) then
+					DoEmote("CRY", playerTwo);
 				end
 				DisableFields();
 				win = true;
@@ -294,9 +351,11 @@ function SelectField(key)
 				MainFrame.field[3]:LockHighlight();
 				MainFrame.field[5]:LockHighlight();
 				MainFrame.field[7]:LockHighlight();
-				if (myTurn == true) then
+				if (myTurn == true) and (multiplayer) then
 					SendChatMessage("won the game!", "EMOTE");
-					DoEmote("dance");
+					DoEmote("DANCE", none);
+				elseif (myTurn == false) and (multiplayer) then
+					DoEmote("CRY", playerTwo);
 				end
 				DisableFields();
 				win = true;
@@ -304,8 +363,10 @@ function SelectField(key)
 		end
 	end
 
-	if (count >= 9) and (win == false) then
-		Config.Reset();
+	if (counter >= 9) and (win == false) then
+		if (multiplayer) then
+			DoEmote("APPLAUD");
+		end
 	end
 end
 
@@ -364,6 +425,10 @@ local function ReceiveInput(event, _, message, sender, language, channelString, 
 				table.insert(argsMsg, arg);
 			end
 		end
+
+		if (#argsMsg[#argsMsg] ~= 1) then
+			return
+		end
 		
 		local argsSnd = {};
 		for _, arg in ipairs({ string.split('-', sender) }) do
@@ -409,4 +474,8 @@ end
 local msg = CreateFrame("Frame");
 msg:RegisterEvent("CHAT_MSG_EMOTE");
 msg:SetScript("OnEvent", ReceiveInput);
+
+
+
+
 
