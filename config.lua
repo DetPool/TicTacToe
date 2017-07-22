@@ -179,7 +179,7 @@ end
 -- Functions
 --------------------------------------
 function SelectField(key)
-	if (string.find(blackList, key)) then
+	if (string.find(blackList, tostring(key))) then
 	else
 		MainFrame.field[key]:Disable();
 		count = count + 1;
