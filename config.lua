@@ -23,7 +23,7 @@ local playerOne = UnitName("player")
 local playerTwo = ""
 local myTurn = true
 local playerX = true;
-local multiplayer = false;
+local multiplayer = true;
 local count = 0;
 local win = false;
 local blackList = "";
@@ -60,17 +60,17 @@ function Config:CreateMenu()
 	  end
 	end)
 
-	MainFrame.multiplayerCheckBox = CreateFrame("CheckButton", nil, MainFrame, "UICheckButtonTemplate");
-	MainFrame.multiplayerCheckBox:ClearAllPoints();
-	MainFrame.multiplayerCheckBox:SetPoint("TOPRIGHT", MainFrame, "TOPRIGHT", -18, 4);
-	MainFrame.multiplayerCheckBox:SetScript("OnClick", function(self)
+	MainFrame.soloCheckBox = CreateFrame("CheckButton", nil, MainFrame, "UICheckButtonTemplate");
+	MainFrame.soloCheckBox:ClearAllPoints();
+	MainFrame.soloCheckBox:SetPoint("TOPRIGHT", MainFrame, "TOPRIGHT", -18, 4);
+	MainFrame.soloCheckBox:SetScript("OnClick", function(self)
 			if (self:GetChecked()) then
-				multiplayer = true;
-			else
 				multiplayer = false;
+			else
+				multiplayer = true;
 			end
 		end);
-	MainFrame.multiplayerCheckBox:SetChecked(false);
+	MainFrame.soloCheckBox:SetChecked(false);
 
 	MainFrame.field = {
 		self:CreateButton(1, "TOPLEFT",		MainFrame,	"TOPLEFT",		12,		-24, "");
