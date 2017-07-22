@@ -1,0 +1,10 @@
+## Interface: 70205
+## Title: |cff00ccffTicTacToe|r
+## Version: 0.1alpha
+## Notes: Alpha: This is an addon for testing purposes.
+## Notes-deDE: Alpha: Dieses Addon ist lediglich für Test-Zwecke vorgesehen.
+## DefaultState: enaled
+## Author: JackSpades
+
+config.lua
+init.lua
