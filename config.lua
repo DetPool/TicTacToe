@@ -26,7 +26,7 @@ local playerX = true;
 local multiplayer = true;
 local count = 0;
 local win = false;
-
+local blackList = "";
 
 
 ---------------------------------
@@ -175,6 +175,8 @@ function SelectField(key)
 			MainFrame.field[key]:SetText("O");
 			playerX = true;
 		end
+
+		blackList = blackList .. key;
 
 		if (count >= 5) then
 			--[[
@@ -341,6 +343,9 @@ local function ReceiveInput(event, _, message, sender, language, channelString, 
 
 		if (argsMsg[#argsMsg] == "at-x0g") then
 			EnableFields();
+			for c in blackList do
+				MainFrame.field[c]:Disable();
+			end
 		end
 
 
