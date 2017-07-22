@@ -19,6 +19,7 @@ local defaults = {
 	}
 }
 
+local myTurn = true
 local playerOne = true;
 local multiplayer = true;
 local count = 0;
@@ -87,8 +88,9 @@ end
 
 function Config:Exit()
 	SendChatMessage("exited the game.", "EMOTE");
+	myTurn = true;
 	playerOne = true;
-	multiplayer = false;
+	--multiplayer = false;
 	counter = 0;
 	win = false;
 	MainFrame:Hide();
@@ -114,7 +116,15 @@ function Config:Toggle()
 end
 
 local function Field_Onclick(self)
+	if (playerOne and multiplayer == false) then
+		SendChatMessage("has put an X on the field : " .. self:GetID(), "EMOTE");
+	else
+		SendChatMessage("has put an O on the field : " .. self:GetID(), "EMOTE");
+	end
+
 	SelectField(self:GetID());
+	myTurn = false;
+	DisableFields();
 end
 
 function Config:CreateButton(id, point, relativeFrame, relativePoint, xOffset, yOffset, text)
@@ -156,12 +166,6 @@ function SelectField(key)
 	else
 		MainFrame.field[key]:SetText("O");
 		playerOne = true;
-	end
-
-	if (playerOne and multiplayer == false) then
-		SendChatMessage("has put an X on the field : " .. key, "EMOTE");
-	else
-		SendChatMessage("has put an O on the field : " .. key, "EMOTE");
 	end
 
 	if (multiplayer) then
