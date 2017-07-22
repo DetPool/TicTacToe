@@ -99,7 +99,6 @@ function core:init(event, name)
 	SlashCmdList.TicTacToe = HandleSlashCommands;
 	
     core:Print("Welcome back", UnitName("player").."!");
-    core.commands.start();
 end
 
 
