@@ -129,6 +129,21 @@ local function EnableFields()
 	end
 end
 
+local function Field_Onclick(self)
+	if (playerX and multiplayer == false) then
+		SendChatMessage("has put an X on the field : " .. self:GetID(), "EMOTE");
+	else
+		SendChatMessage("has put an O on the field : " .. self:GetID(), "EMOTE");
+	end
+
+	SelectField(self:GetID());
+	myTurn = false;
+	
+	if (multiplayer) then
+		DisableFields();
+	end
+end
+
 function Config:CreateButton(id, point, relativeFrame, relativePoint, xOffset, yOffset, text)
 	local btn = CreateFrame("Button", nil, relativeFrame, "GameMenuButtonTemplate");
 	btn:SetID(id);
@@ -144,20 +159,7 @@ function Config:CreateButton(id, point, relativeFrame, relativePoint, xOffset, y
 	return btn;
 end
 
-local function Field_Onclick(self)
-	if (playerX and multiplayer == false) then
-		SendChatMessage("has put an X on the field : " .. self:GetID(), "EMOTE");
-	else
-		SendChatMessage("has put an O on the field : " .. self:GetID(), "EMOTE");
-	end
 
-	SelectField(self:GetID());
-	myTurn = false;
-	
-	if (multiplayer) then
-		DisableFields();
-	end
-end
 
 --------------------------------------
 -- Functions
