@@ -210,7 +210,7 @@ function SelectField(key)
 				MainFrame.field[1]:LockHighlight();
 				MainFrame.field[2]:LockHighlight();
 				MainFrame.field[3]:LockHighlight();
-				if (myTurn == false) then
+				if (myTurn == true) then
 					SendChatMessage("won the game!", "EMOTE");
 					DoEmote("dance");
 				end
@@ -222,7 +222,7 @@ function SelectField(key)
 				MainFrame.field[4]:LockHighlight();
 				MainFrame.field[5]:LockHighlight();
 				MainFrame.field[6]:LockHighlight();
-				if (myTurn == false) then
+				if (myTurn == true) then
 					SendChatMessage("won the game!", "EMOTE");
 					DoEmote("dance");
 				end
@@ -234,7 +234,7 @@ function SelectField(key)
 				MainFrame.field[7]:LockHighlight();
 				MainFrame.field[8]:LockHighlight();
 				MainFrame.field[9]:LockHighlight();
-				if (myTurn == false) then
+				if (myTurn == true) then
 					SendChatMessage("won the game!", "EMOTE");
 					DoEmote("dance");
 				end
@@ -246,8 +246,10 @@ function SelectField(key)
 				MainFrame.field[1]:LockHighlight();
 				MainFrame.field[4]:LockHighlight();
 				MainFrame.field[7]:LockHighlight();
-				SendChatMessage("won the game!", "EMOTE");
-				DoEmote("dance");
+				if (myTurn == true) then
+					SendChatMessage("won the game!", "EMOTE");
+					DoEmote("dance");
+				end
 				DisableFields();
 				win = true;
 			end
@@ -256,7 +258,7 @@ function SelectField(key)
 				MainFrame.field[2]:LockHighlight();
 				MainFrame.field[5]:LockHighlight();
 				MainFrame.field[8]:LockHighlight();
-				if (myTurn == false) then
+				if (myTurn == true) then
 					SendChatMessage("won the game!", "EMOTE");
 					DoEmote("dance");
 				end
@@ -268,7 +270,7 @@ function SelectField(key)
 				MainFrame.field[3]:LockHighlight();
 				MainFrame.field[6]:LockHighlight();
 				MainFrame.field[9]:LockHighlight();
-				if (myTurn == false) then
+				if (myTurn == true) then
 					SendChatMessage("won the game!", "EMOTE");
 					DoEmote("dance");
 				end
@@ -280,7 +282,7 @@ function SelectField(key)
 				MainFrame.field[1]:LockHighlight();
 				MainFrame.field[5]:LockHighlight();
 				MainFrame.field[9]:LockHighlight();
-				if (myTurn == false) then
+				if (myTurn == true) then
 					SendChatMessage("won the game!", "EMOTE");
 					DoEmote("dance");
 				end
@@ -292,7 +294,7 @@ function SelectField(key)
 				MainFrame.field[3]:LockHighlight();
 				MainFrame.field[5]:LockHighlight();
 				MainFrame.field[7]:LockHighlight();
-				if (myTurn == false) then
+				if (myTurn == true) then
 					SendChatMessage("won the game!", "EMOTE");
 					DoEmote("dance");
 				end
@@ -393,8 +395,9 @@ local function ReceiveInput(event, _, message, sender, language, channelString, 
 				MainFrame.field[tonumber(c)]:Disable();
 			end
 
-			myTurn = true;
+			
 			SelectField(tonumber(argsMsg[#argsMsg]));
+			myTurn = true;
 		end
 	end
 end
