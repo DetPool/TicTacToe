@@ -369,6 +369,7 @@ local function ReceiveInput(event, _, message, sender, language, channelString, 
 			if (#playerTwo > 0) then
 			else
 				playerTwo = argsSnd[1];
+				MainFrame.title:SetText(playerOne .. " VS " .. playerTwo);
 			end
 
 			EnableFields();
