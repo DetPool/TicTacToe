@@ -23,7 +23,7 @@ local playerOne = UnitName("player")
 local playerTwo = ""
 local myTurn = true
 local playerX = true;
-local multiplayer = true;
+local multiplayer = false;
 local count = 0;
 local win = false;
 local blackList = "";
@@ -59,6 +59,18 @@ function Config:CreateMenu()
 	   self.isMoving = false;
 	  end
 	end)
+
+	MainFrame.multiplayerCheckBox = CreateFrame("CheckButton", nil, MainFrame, "UICheckButtonTemplate");
+	MainFrame.multiplayerCheckBox:ClearAllPoints();
+	MainFrame.multiplayerCheckBox:SetPoint("TOPRIGHT", MainFrame, "TOPRIGHT", -18, 4);
+	MainFrame.multiplayerCheckBox:SetScript("OnClick", function(self)
+			if (self:GetChecked()) then
+				multiplayer = true;
+			else
+				multiplayer = false;
+			end
+		end);
+	MainFrame.multiplayerCheckBox:SetChecked(false);
 
 	MainFrame.field = {
 		self:CreateButton(1, "TOPLEFT",		MainFrame,	"TOPLEFT",		12,		-24, "");
@@ -132,7 +144,7 @@ local function EnableFields()
 end
 
 local function Field_Onclick(self)
-	if (playerX and multiplayer == false) then
+	if (playerX) then
 		SendChatMessage("has put an X on the field : " .. self:GetID(), "EMOTE");
 	else
 		SendChatMessage("has put an O on the field : " .. self:GetID(), "EMOTE");
