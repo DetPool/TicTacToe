@@ -165,7 +165,8 @@ end
 -- Functions
 --------------------------------------
 function SelectField(key)
-	if (MainFrame.field[key].IsDisabled == false) then
+	if (string.find(blackList, tonumber(key))) then
+	else
 		MainFrame.field[key]:Disable();
 		count = count + 1;
 		if (playerX == true) then
@@ -354,7 +355,13 @@ local function ReceiveInput(event, _, message, sender, language, channelString, 
 			else
 				playerTwo = argsSnd[1];
 			end
+
 			EnableFields();
+			for c in blackList do
+				MainFrame.field[c]:Disable();
+			end
+
+			myTurn = true;
 			SelectField(tonumber(argsMsg[#argsMsg]));
 		end
 	end
