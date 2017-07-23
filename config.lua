@@ -7,7 +7,18 @@ core.Config = {}; -- adds Config table to addon namespace
 local Config = core.Config;
 local MainFrame;
 local ConfigFrame;
+
 local Title = "Tic Tac Toe"
+local xPosition = 0;
+local yPosition = 0;
+local playerOne = UnitName("player")
+local playerTwo = ""
+local myTurn = true
+local playerX = true;
+local multiplayer = true;
+local counter = 0;
+local win = false;
+local blackList = "";
 
 --------------------------------------
 -- Defaults (usually a database!)
@@ -21,23 +32,13 @@ local defaults = {
 	}
 }
 
-local playerOne = UnitName("player")
-local playerTwo = ""
-local myTurn = true
-local playerX = true;
-local multiplayer = true;
-local counter = 0;
-local win = false;
-local blackList = "";
-
-
 ---------------------------------
 -- Main Frame
 ---------------------------------
 function Config:CreateMenu()
 	MainFrame = CreateFrame("Frame", "TicTacToe_MainFrame", UIParent, "BasicFrameTemplateWithInset");
 	MainFrame:SetSize(240, 240); -- width, height
-	MainFrame:SetPoint("CENTER", UIParent, "CENTER"); -- point, relativeFrame, relativePoint, xOffset, yOffset
+	MainFrame:SetPoint("CENTER", UIParent, "CENTER", xPosition, yPosition); -- point, relativeFrame, relativePoint, xOffset, yOffset
 	MainFrame.title = MainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
 	MainFrame.title:SetPoint("LEFT", MainFrame.TitleBg, "LEFT", 5, 0);
 	MainFrame.title:SetText(Title);
@@ -53,6 +54,9 @@ function Config:CreateMenu()
 	  if button == "LeftButton" and self.isMoving then
 	   self:StopMovingOrSizing();
 	   self.isMoving = false;
+	   local point = self:GetPoint();
+	   xPosition = point[xOffset];
+	   yPosition = point[yOffset];
 	  end
 	end)
 	MainFrame:SetScript("OnHide", function(self)
@@ -136,6 +140,9 @@ function Config:CreateMenu()
 	return MainFrame;
 end
 
+--------------------------------------
+-- Config functions
+--------------------------------------
 function Config:Exit()
 	SendChatMessage("has quit the game.", "EMOTE");
 	myTurn = true;
@@ -157,9 +164,21 @@ function Config:Reset()
 	core.commands.start();
 end
 
---------------------------------------
--- Config functions
---------------------------------------
+function Config:Multiplayer()
+	print("1");
+	--if (MainFrame) then
+		if (multiplayer) then
+			MainFrame.soloCheckBox:SetChecked(false);
+			multiplayer = false;
+			print("2");
+		else
+			MainFrame.soloCheckBox:SetChecked(true);
+			multiplayer = true;
+			print("3");
+		end
+	--end
+end
+
 function Config:GetThemeColor()
 	local c = defaults.theme;
 	return c.r, c.g, c.b, c.hex;

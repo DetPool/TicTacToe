@@ -27,10 +27,7 @@ core.commands = {
 
 	["exit"] = core.Config.Exit,
 
-
-	["multi"] = function()
-		multiplayer = true;
-	end,
+	["multi"] = core.Config.Multiplayer,
 };
 
 local function HandleSlashCommands(str)	
@@ -86,19 +83,11 @@ function core:init(event, name)
 	----------------------------------
 	-- Register Slash Commands!
 	----------------------------------
-	SLASH_RELOADUI1 = "/rl"; -- new slash command for reloading UI
-	SlashCmdList.RELOADUI = ReloadUI;
-
-	SLASH_FRAMESTK1 = "/fs"; -- new slash command for showing framestack tool
-	SlashCmdList.FRAMESTK = function()
-		LoadAddOn("Blizzard_DebugTools");
-		FrameStackTooltip_Toggle();
-	end
-
 	SLASH_TicTacToe1 = "/ttt";
 	SlashCmdList.TicTacToe = HandleSlashCommands;
 	
-    core:Print("Welcome back", UnitName("player").."!");
+	-- Needs to be removed, once developing is finished!
+	core.Config.Toggle();
 end
 
 
